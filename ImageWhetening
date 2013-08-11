@@ -1,0 +1,45 @@
+function [xBar,xTiled,k] = ImageWhitening(image,k)
+
+%--------------------------------------------------------------------------
+%This is a fuction that accomplete the whitening operation.
+%input:
+%   image:  the original image
+%   k:      the number of principle complete
+%output:
+%   xBar:   the top k x value
+%   xTiled: the recover value
+%   k:      the number of principle complete
+%   
+% author: Liang Guo   guoliang2248@gmail.com   Aug/6/2013
+%--------------------------------------------------------------------------
+x = double(image);
+
+x = x-repmat(mean(x,1),size(x,1),1);   %Zero-mean the data (by row)
+
+xRot = zeros(size(x));                 %Implement PCA to obtain xRot           
+[n m] = size(x);
+sigma = (1.0/m)*x*x';
+[u s v] = svd(sigma);
+
+if nargin<2 ||isempty(k)               % find the value of k
+    k = 0; %
+    ss = diag(s);
+    k = length(ss((cumsum(ss)/sum(ss))<=0.99));
+end
+
+
+epsilon = 0.1;                         % Implement PCA with whitening and regularisation
+xPCAWhite = zeros(size(x));
+xPCAWhite = diag(1./sqrt(diag(s)+epsilon))*u'*x;
+
+covar = (1./m)*xPCAWhite*xPCAWhite';
+
+% Visualise the covariance matrix. You should see a red line across the
+% diagonal against a blue background.
+figure('name','Visualisation of covariance matrix');
+imagesc(covar);
+
+xBar=xPCAWhite(1:k,:);
+xTiled = u(:,1:k)*xBar;
+end
+
