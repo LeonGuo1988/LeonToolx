@@ -1,0 +1,24 @@
+function  [xbar,xTilde,k]=ImagePCA(image)
+
+x = double(image);
+%Zero-mean the data (by row)
+x = x-repmat(mean(x,1),size(x,1),1); 
+
+%Implement PCA to obtain xRot
+xRot = zeros(size(x));                     
+[n m] = size(x);
+sigma = (1.0/m)*x*x';
+[u s v] = svd(sigma);
+xRot = u'*x;
+
+% find the value of k
+k = 0; % Set k accordingly
+ss = diag(s);
+k = length(ss((cumsum(ss)/sum(ss))<=0.99));
+
+% get the top k value xbar and the reconstruction
+xbar=xRot(1:k,:);
+xTilde = u(:,1:k)*xbar;
+
+
+end
