@@ -26,6 +26,8 @@ function model = forestTrain(X, Y, opts)
     % true (default) gives slightly better looking results.
     %
     
+
+%%%leon leon leon
     numTrees= 100;
     verbose= false;
     
